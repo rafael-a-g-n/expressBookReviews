@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
@@ -18,16 +19,21 @@ public_users.post("/register", (req, res) => {
       return res.status(404).json({ message: "User already exists!" });
     }
   }
-  return res
-    .status(404)
-    .json({
-      message: "Unable to register user. Username and password are required.",
-    });
+  return res.status(404).json({
+    message: "Unable to register user. Username and password are required.",
+  });
 });
 
 // Get the book list available in the shop
-public_users.get("/", function (req, res) {
-  return res.status(200).send(JSON.stringify(books, null, 4));
+public_users.get("/", async function (req, res) {
+  try {
+    const response = await Promise.resolve({ data: books });
+    return res.status(200).send(JSON.stringify(response.data, null, 4));
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching books", error: error.message });
+  }
 });
 
 // Get book details based on ISBN
