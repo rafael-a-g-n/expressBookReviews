@@ -37,12 +37,19 @@ public_users.get("/", async function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users.get("/isbn/:isbn", function (req, res) {
-  const isbn = req.params.isbn;
-  if (books[isbn]) {
-    return res.status(200).json(books[isbn]);
-  } else {
-    return res.status(404).json({ message: "Book Doesn't Exist" });
+public_users.get("/isbn/:isbn", async function (req, res) {
+  try {
+    const isbn = req.params.isbn;
+    const response = await Promise.resolve({ data: books[isbn] });
+    if (response.data) {
+      return res.status(200).json(response.data);
+    } else {
+      return res.status(404).json({ message: "Book Doesn't Exist" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching book details", error: error.message });
   }
 });
 
