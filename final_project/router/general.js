@@ -20,7 +20,7 @@ public_users.get("/isbn/:isbn", function (req, res) {
   if (books[isbn]) {
     return res.status(200).json(books[isbn]);
   } else {
-    return res.status(404).json({ message: "Book not found" });
+    return res.status(404).json({ message: "Book Doesn't Exist" });
   }
 });
 
