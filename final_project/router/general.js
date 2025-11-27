@@ -73,29 +73,36 @@ public_users.get("/author/:author", async function (req, res) {
         .json({ message: "No books found by that author." });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        message: "Error fetching books by author",
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: "Error fetching books by author",
+      error: error.message,
+    });
   }
 });
 
 // Get all books based on title
-public_users.get("/title/:title", function (req, res) {
-  const requestedTitle = req.params.title.toLowerCase();
-  let foundBooks = [];
-  for (const isbn in books) {
-    if (books[isbn].title.toLowerCase() === requestedTitle) {
-      foundBooks.push(books[isbn]);
+public_users.get("/title/:title", async function (req, res) {
+  try {
+    const requestedTitle = req.params.title.toLowerCase();
+    const response = await Promise.resolve({ data: books });
+    let foundBooks = [];
+    for (const isbn in response.data) {
+      if (response.data[isbn].title.toLowerCase() === requestedTitle) {
+        foundBooks.push(response.data[isbn]);
+      }
     }
-  }
 
-  if (foundBooks.length > 0) {
-    return res.status(200).json(foundBooks);
-  } else {
-    return res.status(404).json({ message: "No books found with that title." });
+    if (foundBooks.length > 0) {
+      return res.status(200).json(foundBooks);
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No books found with that title." });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching books by title", error: error.message });
   }
 });
 
